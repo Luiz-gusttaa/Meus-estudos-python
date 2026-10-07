@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Header
 from database import conectar
 from  models import AlunoNovo
 
 app = FastAPI()
+
+API_KEY = "minhachavesecreta123"
 
 @app.get("/")
 def raiz():
@@ -18,7 +20,11 @@ def listar_alunos():
     return resultado
 
 @app.post("/alunos")
-def criar_aluno(aluno: AlunoNovo):
+def criar_aluno(aluno: AlunoNovo, api_key: str = Header(...)):
+    if api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Chave de API inválida")
+
+
     conexao = conectar()
     cursor = conexao.cursor()
     cursor.execute(
