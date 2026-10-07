@@ -9,14 +9,21 @@ class AlunoNovo(BaseModel):
     idade: int
     curso_id: int
 
-@app.post("/alunos")
-def criar_aluno(aluno: AlunoNovo):
+@app.get("/alunos")
+def listar_alunos():
     conexao = sqlite3.connect("escola.db")
     cursor = conexao.cursor()
-    cursor.execute(
-        "INSERT INTO alunos (nome, idade, curso_id) VALUES (?, ?, ?)",
-        (aluno.nome, aluno.idade, aluno.curso_id)
-    )
-    conexao.commit()
+    cursor.execute("SELECT nome, idade, curso_id FROM alunos")
+    resultado = cursor.fetchall()
     conexao.close()
-    return {"mensagem": f"Aluno {aluno.nome} criado com sucesso"}
+    return resultado
+
+
+#@app.delete("/alunos/{nome}")
+#def deletar_aluno(nome: str):
+#    conexao = sqlite3.connect("escola.db")
+#    cursor = conexao.cursor()
+#    cursor.execute("DELETE FROM alunos WHERE nome = ?", (nome,))
+#    conexao.commit()
+#    conexao.close()
+#    return {"mensagem": f"Aluno {nome} removido com sucesso"}
