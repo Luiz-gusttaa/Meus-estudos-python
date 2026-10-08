@@ -24,10 +24,23 @@ def raiz():
 def listar_alunos():
     conexao = conectar()
     cursor = conexao.cursor()
-    cursor.execute("SELECT nome, idade, curso_id, id FROM alunos")
+    cursor.execute("""
+    SELECT alunos.id, alunos.nome, alunos.idade, cursos.nome AS curso
+    FROM  alunos
+    LEFT JOIN cursos ON alunos.curso_id = cursos.id    
+"""
+    )
     resultado = cursor.fetchall()
+    alunos1: list[dict[str, int | str | None]]=[]
+    for i in resultado:
+            aluno = {
+            "id":i[0], "nome": i[1], "idade": i[2], "curso": i[3]
+            }
+            alunos1.append(aluno)
+
     conexao.close()
-    return resultado
+    return alunos1
+
 
 @app.post("/alunos", dependencies=[Depends(verificar_chave)])
 def criar_aluno(aluno: AlunoNovo):
